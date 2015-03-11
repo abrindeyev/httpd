@@ -67,6 +67,9 @@ stop() {
 	echo -n $"Stopping $prog: "
 	killproc -p ${pidfile} -d ${STOP_TIMEOUT} $httpd
 	RETVAL=$?
+	for misbehaving_pid in $(lsof -Fp -i :80 | sed 's/p//'); do
+	  kill -9 $misbehaving_pid
+	done
 	echo
 	[ $RETVAL = 0 ] && rm -f ${lockfile} ${pidfile}
 }
